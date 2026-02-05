@@ -14,6 +14,33 @@ document.addEventListener("DOMContentLoaded", () => {
     return (parts[0][0] + parts[1][0]).toUpperCase();
   }
 
+  // Function to handle participant deletion
+  async function handleDeleteParticipant(event) {
+    event.preventDefault();
+    const activityName = event.target.dataset.activity;
+    const email = event.target.dataset.email;
+
+    try {
+      const response = await fetch(
+        `/activities/${encodeURIComponent(activityName)}/unregister?email=${encodeURIComponent(email)}`,
+        {
+          method: "POST",
+        }
+      );
+
+      if (response.ok) {
+        fetchActivities();
+      } else {
+        const result = await response.json();
+        alert(result.detail || "Failed to unregister participant");
+        console.error("Error unregistering participant:", result);
+      }
+    } catch (error) {
+      alert("Failed to unregister participant. Please try again.");
+      console.error("Error unregistering participant:", error);
+    }
+  }
+
   // Function to fetch activities from API
   async function fetchActivities() {
     try {
@@ -43,6 +70,20 @@ document.addEventListener("DOMContentLoaded", () => {
           participantsMarkup = `<div class="participants-section"><h5>Participants</h5><p class="empty">No participants yet</p></div>`;
         }
 
+        if (details.participants && details.participants.length > 0) {
+          participantsMarkup = `<div class="participants-section"><h5>Participants</h5><ul class="participants-list">` +
+            details.participants.map(p => `
+              <li>
+                <span class="participant-badge">${getInitials(p)}</span>
+                <span class="participant-name">${p}</span>
+                <button class="delete-participant-btn" data-activity="${name}" data-email="${p}" title="Remove participant">✕</button>
+              </li>
+            `).join("") +
+            `</ul></div>`;
+        } else {
+          participantsMarkup = `<div class="participants-section"><h5>Participants</h5><p class="empty">No participants yet</p></div>`;
+        }
+
         activityCard.innerHTML = `
           <h4>${name}</h4>
           <p>${details.description}</p>
@@ -52,6 +93,12 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
 
         activitiesList.appendChild(activityCard);
+
+        // Add event listeners for delete buttons
+        const deleteButtons = activityCard.querySelectorAll(".delete-participant-btn");
+        deleteButtons.forEach(btn => {
+          btn.addEventListener("click", handleDeleteParticipant);
+        });
 
         // Add option to select dropdown
         const option = document.createElement("option");

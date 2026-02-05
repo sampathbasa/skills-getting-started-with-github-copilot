@@ -173,6 +173,7 @@ footer {
   box-shadow: 0 1px 0 rgba(0,0,0,0.02);
   font-size: 14px;
   color: #444;
+  list-style: none;
 }
 
 .participant-badge {
@@ -195,6 +196,27 @@ footer {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.delete-participant-btn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-left: auto;
+  transition: background-color 0.2s;
+  height: fit-content;
+}
+
+.delete-participant-btn:hover {
+  background-color: #c82333;
+}
+
+.delete-participant-btn:active {
+  background-color: #bd2130;
 }
 
 /* empty state */
